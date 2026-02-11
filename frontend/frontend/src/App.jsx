@@ -80,7 +80,7 @@ const buildThresholdData = (values) => {
 
       <br /><br />
       {result && result.patterns && (
-  <div style={{ marginTop: "2rem" }}>
+  <div style={{ marginTop: "1.5rem" }}>
     <h3>Comparison Chart</h3>
     
     <Bar
@@ -114,7 +114,10 @@ const buildThresholdData = (values) => {
     }
   }}
 />
-
+<div style={{ height: "24px" }} />
+<div className="chart-insight">
+    📊 {result.patterns.comparison.insight}
+  </div>
 
   </div>
 )}
@@ -147,6 +150,10 @@ const buildThresholdData = (values) => {
         }
       }}
     />
+    <div style={{ height: "24px" }} />
+    <div className="chart-insight">
+  📈 {result.patterns.trend.insight}
+</div>
   </div>
 )}
 {result && result.patterns && (
@@ -179,6 +186,10 @@ const buildThresholdData = (values) => {
             },
           }}
         />
+        <div style={{ height: "24px" }} />
+        <div className="chart-insight">
+  📦 {result.patterns.distribution.insight}
+</div>
       </div>
     );
   })()
@@ -223,6 +234,10 @@ const buildThresholdData = (values) => {
             },
           }}
         />
+        <div style={{ height: "24px" }} />
+        <div className="chart-insight">
+  🚨 {result.patterns.anomaly.insight}
+</div>
       </div>
     );
   })()
@@ -266,23 +281,12 @@ const buildThresholdData = (values) => {
             },
           }}
         />
+        <div style={{ height: "24px" }} />
       </div>
     );
   })()
 )}
 
-      {result && result.patterns && (
-  <div style={{ marginTop: "2rem" }}>
-    <h3>Insights</h3>
-
-    <p><strong>Comparison:</strong> {result.patterns.comparison.insight}</p>
-    <p><strong>Trend:</strong> {result.patterns.trend.insight}</p>
-    <p><strong>Correlation:</strong> {result.patterns.correlation.insight}</p>
-    <p><strong>Distribution:</strong> {result.patterns.distribution.insight}</p>
-    <p><strong>Anomaly:</strong> {result.patterns.anomaly.insight}</p>
-    <p><strong>Threshold:</strong> {result.patterns.threshold.insight}</p>
-  </div>
-)}
 
     </div>
   );
