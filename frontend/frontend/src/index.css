@@ -127,6 +127,16 @@ a:hover {
   background-color: #0d1117;
 }
 
+.upload-box.file-selected {
+  border-color: #238636;
+  background-color: #0d3817;
+}
+
+.upload-box.file-selected:hover {
+  border-color: #2ea043;
+  background-color: #1a4d2e;
+}
+
 .upload-box input[type="file"] {
   display: none;
 }
@@ -148,6 +158,16 @@ a:hover {
 
 .upload-box:hover .upload-icon {
   color: #58a6ff;
+}
+
+.upload-icon.success {
+  font-size: 3.5rem;
+  color: #238636;
+  transition: color 0.3s ease;
+}
+
+.upload-box.file-selected:hover .upload-icon.success {
+  color: #2ea043;
 }
 
 .upload-content p {

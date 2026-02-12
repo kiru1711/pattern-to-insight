@@ -73,22 +73,61 @@ function App() {
   const thresholdData =
     result && buildThresholdData(result.patterns.trend.values);
 
+  // Comparison chart helpers
+  const getComparisonInsight = () => {
+    if (!result) return "";
+    const values = result.patterns.comparison.values.map(Number);
+    const categories = result.patterns.comparison.categories;
+    
+    const maxValue = Math.max(...values);
+    const minValue = Math.min(...values);
+    const maxIndex = values.indexOf(maxValue);
+    const minIndex = values.indexOf(minValue);
+    const maxName = categories[maxIndex];
+    const minName = categories[minIndex];
+    
+    return `From the comparison chart, ${maxName} shows the highest performance, while ${minName} shows the lowest performance.`;
+  };
+
+  const getComparisonBarColors = () => {
+    if (!result) return [];
+    const values = result.patterns.comparison.values.map(Number);
+    const maxValue = Math.max(...values);
+    const minValue = Math.min(...values);
+    
+    return values.map((value) => {
+      if (value === maxValue) return "#4CAF50"; // Green for highest
+      if (value === minValue) return "#F44336"; // Red for lowest
+      return "#2196F3"; // Blue for others
+    });
+  };
+
   return !result ? (
     <div className="landing">
       {/* Hero Section */}
       <div className="hero">
         <div className="logo">📊</div>
-        <h1>CSV Data Analyzer</h1>
+        <h1>Pattern to Insight</h1>
         <p>Upload your CSV file to discover patterns and insights</p>
       </div>
 
       {/* Upload Section */}
       <div className="upload-section">
-        <label className="upload-box" htmlFor="file-input">
+        <label className={`upload-box ${file ? "file-selected" : ""}`} htmlFor="file-input">
           <div className="upload-content">
-            <div className="upload-icon">📤</div>
-            <p className="primary">Click to upload or drag and drop</p>
-            <p className="secondary">CSV files only</p>
+            {!file ? (
+              <>
+                <div className="upload-icon">📤</div>
+                <p className="primary">Click to upload or drag and drop</p>
+                <p className="secondary">CSV files only</p>
+              </>
+            ) : (
+              <>
+                <div className="upload-icon success">✓</div>
+                <p className="primary">File uploaded successfully</p>
+                <p className="secondary">{file.name}</p>
+              </>
+            )}
           </div>
           <input
             id="file-input"
@@ -124,13 +163,13 @@ function App() {
                   {
                     label: "Average Performance",
                     data: result.patterns.comparison.values.map(Number),
-                    backgroundColor: ["#4CAF50", "#F44336"],
+                    backgroundColor: getComparisonBarColors(),
                   },
                 ],
               }}
             />
             <div className="chart-insight">
-              📊 {result.patterns.comparison.insight}
+              📊 {getComparisonInsight()}
             </div>
           </div>
 
