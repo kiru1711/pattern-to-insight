@@ -233,6 +233,49 @@ a:hover {
   outline-offset: 2px;
 }
 
+/* ========== Threshold Summary ========== */
+
+.threshold-summary {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #0d1117;
+  border-radius: 8px;
+  border: 1px solid #30363d;
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.summary-item.threshold-value {
+  color: #FF9800;
+}
+
+.summary-item.above {
+  color: #2196F3;
+}
+
+.summary-item.below {
+  color: #F44336;
+}
+
+.summary-label {
+  font-size: 0.9rem;
+  color: #8b949e;
+  font-weight: 500;
+}
+
+.summary-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: inherit;
+}
+
 /* ========== App Container (Charts) ========== */
 
 .app-container {

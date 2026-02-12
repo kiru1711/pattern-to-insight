@@ -102,6 +102,48 @@ function App() {
     });
   };
 
+  const getThresholdSplitData = () => {
+    if (!thresholdData) return { above: [], below: [] };
+    
+    const threshold = thresholdData.threshold;
+    const values = thresholdData.values;
+    
+    return {
+      above: values.map((v) => (v >= threshold ? v : null)),
+      below: values.map((v) => (v < threshold ? v : null)),
+    };
+  };
+
+  const getThresholdCounts = () => {
+    if (!thresholdData) return { above: 0, below: 0 };
+    
+    const threshold = thresholdData.threshold;
+    const values = thresholdData.values;
+    
+    const above = values.filter((v) => v >= threshold).length;
+    const below = values.filter((v) => v < threshold).length;
+    
+    return { above, below };
+  };
+
+  const getThresholdInsight = () => {
+    const counts = getThresholdCounts();
+    const total = counts.above + counts.below;
+    
+    if (total === 0) return "No data available to analyze.";
+    
+    const belowPercentage = (counts.below / total) * 100;
+    const abovePercentage = (counts.above / total) * 100;
+    
+    if (belowPercentage > 60) {
+      return "A majority of values fall below the defined threshold, indicating underperformance.";
+    } else if (abovePercentage > 50) {
+      return "Most values exceed the threshold, indicating acceptable or improving performance.";
+    } else {
+      return "Values are distributed around the threshold, indicating mixed performance.";
+    }
+  };
+
   return !result ? (
     <div className="landing">
       {/* Hero Section */}
@@ -258,9 +300,22 @@ function App() {
                 ),
                 datasets: [
                   {
-                    label: "Actual",
-                    data: thresholdData.values,
+                    label: "Above Threshold",
+                    data: getThresholdSplitData().above,
                     borderColor: "#2196F3",
+                    backgroundColor: "#2196F3",
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    showLine: false,
+                  },
+                  {
+                    label: "Below Threshold",
+                    data: getThresholdSplitData().below,
+                    borderColor: "#F44336",
+                    backgroundColor: "#F44336",
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    showLine: false,
                   },
                   {
                     label: "Threshold",
@@ -269,12 +324,28 @@ function App() {
                     ),
                     borderColor: "#FF9800",
                     borderDash: [6, 6],
+                    pointRadius: 0,
+                    tension: 0,
                   },
                 ],
               }}
             />
+            <div className="threshold-summary">
+              <div className="summary-item threshold-value">
+                <span className="summary-label">Threshold:</span>
+                <span className="summary-value">{thresholdData.threshold.toFixed(2)}</span>
+              </div>
+              <div className="summary-item above">
+                <span className="summary-label">Points above:</span>
+                <span className="summary-value">{getThresholdCounts().above}</span>
+              </div>
+              <div className="summary-item below">
+                <span className="summary-label">Points below:</span>
+                <span className="summary-value">{getThresholdCounts().below}</span>
+              </div>
+            </div>
             <div className="chart-insight">
-              ⚠️ {result.patterns.threshold.insight}
+              ⚠️ {getThresholdInsight()}
             </div>
           </div>
         </div>
