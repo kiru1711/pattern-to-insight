@@ -73,23 +73,43 @@ function App() {
   const thresholdData =
     result && buildThresholdData(result.patterns.trend.values);
 
-  return (
-    <div className="app-container">
-      <h2>Pattern-to-Insight System</h2>
+  return !result ? (
+    <div className="landing">
+      {/* Hero Section */}
+      <div className="hero">
+        <div className="logo">📊</div>
+        <h1>CSV Data Analyzer</h1>
+        <p>Upload your CSV file to discover patterns and insights</p>
+      </div>
 
-      {/* Upload UI */}
-      {!result && (
-        <>
+      {/* Upload Section */}
+      <div className="upload-section">
+        <label className="upload-box" htmlFor="file-input">
+          <div className="upload-content">
+            <div className="upload-icon">📤</div>
+            <p className="primary">Click to upload or drag and drop</p>
+            <p className="secondary">CSV files only</p>
+          </div>
           <input
+            id="file-input"
             type="file"
             accept=".csv"
             onChange={(e) => setFile(e.target.files[0])}
           />
-          <br />
-          <br />
-          <button onClick={handleUpload}>Upload Dataset</button>
-        </>
-      )}
+        </label>
+
+        <button
+          className="analyze-btn"
+          onClick={handleUpload}
+          disabled={!file}
+        >
+          Analyze Dataset
+        </button>
+      </div>
+    </div>
+  ) : (
+    <div className="app-container">
+      <h2>Pattern-to-Insight System</h2>
 
       {/* Charts */}
       {result && (
