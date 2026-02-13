@@ -1,0 +1,220 @@
+.student-validation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 2rem;
+}
+
+.validation-container {
+  width: 100%;
+  max-width: 500px;
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 2.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.validation-container h3 {
+  font-size: 1.8rem;
+  color: #c9d1d9;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.validation-subtitle {
+  font-size: 0.95rem;
+  color: #8b949e;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.input-group {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.input-group input {
+  flex: 1;
+  padding: 0.8rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  background-color: #0d1117;
+  color: #c9d1d9;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #58a6ff;
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+}
+
+.input-group input.input-error {
+  border-color: #f85149;
+}
+
+.input-group input.input-error:focus {
+  border-color: #f85149;
+  box-shadow: 0 0 0 3px rgba(248, 81, 73, 0.1);
+}
+
+.validate-btn {
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: inherit;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  background-color: #238636;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.validate-btn:hover {
+  background-color: #2ea043;
+  border-color: #58a6ff;
+}
+
+.validate-btn:active {
+  background-color: #1f6feb;
+  transform: scale(0.98);
+}
+
+.validate-btn:focus {
+  outline: 2px solid #58a6ff;
+  outline-offset: 2px;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: rgba(248, 81, 73, 0.1);
+  border: 1px solid #f85149;
+  border-radius: 8px;
+  color: #f85149;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-align: center;
+  animation: slideIn 0.3s ease;
+}
+
+.error-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Student Header (After Validation) */
+
+.student-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: #161b22;
+  border: 1px solid #238636;
+  border-radius: 12px;
+  background-color: rgba(35, 134, 54, 0.1);
+}
+
+.student-welcome {
+  font-size: 1.1rem;
+  color: #8b949e;
+  margin: 0;
+}
+
+.student-welcome strong {
+  color: #238636;
+  font-weight: 600;
+}
+
+.logout-btn {
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: inherit;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  background-color: #161b22;
+  color: #c9d1d9;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background-color: #0d1117;
+  border-color: #58a6ff;
+  color: #58a6ff;
+}
+
+.logout-btn:active {
+  transform: scale(0.98);
+}
+
+/* ========== Responsive Design ========== */
+
+@media (max-width: 768px) {
+  .validation-container {
+    padding: 2rem 1.5rem;
+  }
+
+  .student-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .input-group {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .validate-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .student-validation {
+    padding: 1rem;
+  }
+
+  .validation-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .validation-container h3 {
+    font-size: 1.5rem;
+  }
+
+  .input-group input {
+    padding: 0.7rem 0.8rem;
+    font-size: 1rem;
+  }
+
+  .error-message {
+    flex-direction: column;
+    text-align: center;
+  }
+}
