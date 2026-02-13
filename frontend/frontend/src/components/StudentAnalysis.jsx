@@ -1,5 +1,6 @@
 import { useState } from "react";
 import AnalysisCharts from "./AnalysisCharts";
+import StudentSummaryCard from "./StudentSummaryCard";
 import "../styles/StudentAnalysis.css";
 
 function StudentAnalysis({ result, csvData }) {
@@ -55,6 +56,39 @@ function StudentAnalysis({ result, csvData }) {
     }
   };
 
+  // Build dataset from CSV for StudentSummaryCard
+  const buildDataset = () => {
+    if (!csvData || csvData.length < 2) return [];
+    
+    const headers = csvData[0];
+    
+    // Find name column (index 0 if not found)
+    let nameColumnIndex = headers.findIndex(
+      (h) => h.toLowerCase() === "name" || h.toLowerCase() === "student"
+    );
+    if (nameColumnIndex === -1) nameColumnIndex = 0;
+    
+    // Find marks column
+    let marksColumnIndex = headers.findIndex(
+      (h) => {
+        const lowerH = h.toLowerCase();
+        return lowerH === "marks" || 
+               lowerH === "score" || 
+               lowerH === "performance" ||
+               lowerH === "value";
+      }
+    );
+    if (marksColumnIndex === -1) marksColumnIndex = 1; // Default to second column
+    
+    // Build dataset
+    return csvData.slice(1).map((row) => ({
+      name: row[nameColumnIndex],
+      marks: parseFloat(row[marksColumnIndex]) || 0,
+    })).filter(item => item.name);
+  };
+
+  const dataset = buildDataset();
+
   if (validatedName) {
     return (
       <div className="app-container">
@@ -72,6 +106,7 @@ function StudentAnalysis({ result, csvData }) {
             Change Student
           </button>
         </div>
+        <StudentSummaryCard studentName={validatedName} dataset={dataset} />
         <AnalysisCharts result={result} studentName={validatedName} />
       </div>
     );

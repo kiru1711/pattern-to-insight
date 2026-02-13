@@ -372,6 +372,189 @@ a:hover {
   }
 }
 
+/* ========== Student Summary Card ========== */
+
+.student-summary-card {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.summary-header {
+  margin-bottom: 1.5rem;
+}
+
+.summary-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #c9d1d9;
+  font-weight: 600;
+}
+
+.summary-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.rank-display {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.rank-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rank-label {
+  font-size: 0.85rem;
+  color: #8b949e;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rank-value {
+  font-size: 1.5rem;
+  color: #58a6ff;
+  font-weight: 700;
+}
+
+.status-badge {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-align: center;
+  min-width: 140px;
+}
+
+.summary-stats {
+  display: flex;
+  gap: 2rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #8b949e;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 1.3rem;
+  color: #c9d1d9;
+  font-weight: 700;
+}
+
+/* ========== Admin Summary Card ========== */
+
+.admin-summary-card {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.top-performers-section {
+  margin-bottom: 2rem;
+}
+
+.top-performers-section h4 {
+  font-size: 1rem;
+  color: #c9d1d9;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  margin-top: 0;
+}
+
+.top-performers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.performer-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background-color: rgba(88, 166, 255, 0.05);
+  border: 1px solid rgba(88, 166, 255, 0.1);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.performer-item:hover {
+  background-color: rgba(88, 166, 255, 0.1);
+  border-color: rgba(88, 166, 255, 0.3);
+}
+
+.performer-rank {
+  font-size: 0.9rem;
+  color: #58a6ff;
+  font-weight: 700;
+  min-width: 35px;
+}
+
+.performer-name {
+  flex: 1;
+  color: #c9d1d9;
+  font-weight: 500;
+}
+
+.performer-marks {
+  font-size: 1.1rem;
+  color: #238636;
+  font-weight: 700;
+}
+
+.admin-summary-stats {
+  display: flex;
+  gap: 1.5rem;
+  border-top: 1px solid #30363d;
+  padding-top: 1.5rem;
+}
+
+.admin-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.admin-stat .stat-label {
+  font-size: 0.85rem;
+  color: #8b949e;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-stat .stat-value {
+  font-size: 1.3rem;
+  color: #c9d1d9;
+  font-weight: 700;
+}
+
 /* ========== Responsive Design ========== */
 
 @media (max-width: 768px) {
@@ -405,6 +588,58 @@ a:hover {
 
   .charts-grid {
     grid-template-columns: 1fr;
+  }
+
+  .student-summary-card {
+    padding: 1rem;
+  }
+
+  .summary-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .rank-display {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .status-badge {
+    min-width: 120px;
+  }
+
+  .rank-value {
+    font-size: 1.3rem;
+  }
+
+  .stat-value {
+    font-size: 1.1rem;
+  }
+
+  .admin-summary-card {
+    padding: 1rem;
+  }
+
+  .admin-summary-stats {
+    gap: 1rem;
+  }
+
+  .performer-item {
+    padding: 0.6rem 0.75rem;
+  }
+
+  .performer-rank {
+    min-width: 30px;
+    font-size: 0.85rem;
+  }
+
+  .performer-name {
+    font-size: 0.95rem;
+  }
+
+  .performer-marks {
+    font-size: 1rem;
   }
 }
 
@@ -445,6 +680,65 @@ a:hover {
   .analyze-btn {
     padding: 0.85rem 1rem;
     font-size: 1rem;
+  }
+
+  .student-summary-card {
+    padding: 1rem;
+  }
+
+  .rank-display {
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .status-badge {
+    width: 100%;
+  }
+
+  .summary-stats {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .rank-value {
+    font-size: 1.2rem;
+  }
+
+  .stat-value {
+    font-size: 1rem;
+  }
+
+  .admin-summary-card {
+    padding: 1rem;
+  }
+
+  .admin-summary-stats {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .performer-item {
+    flex-wrap: wrap;
+    padding: 0.6rem 0.75rem;
+  }
+
+  .performer-rank {
+    min-width: 25px;
+    font-size: 0.8rem;
+  }
+
+  .performer-name {
+    font-size: 0.9rem;
+    flex: 0 0 60%;
+  }
+
+  .performer-marks {
+    font-size: 0.95rem;
+  }
+
+  .admin-stat .stat-value {
+    font-size: 1.1rem;
   }
 }
 

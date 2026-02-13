@@ -110,7 +110,7 @@ function App() {
         />
         <Route 
           path="/analysis/admin" 
-          element={<AdminAnalysis result={result} />} 
+          element={<AdminAnalysis result={result} csvData={csvData} />} 
         />
         <Route 
           path="/analysis/student" 
