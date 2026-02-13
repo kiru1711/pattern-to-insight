@@ -1,8 +1,87 @@
+import { useState } from "react";
 import { Line, Bar } from "react-chartjs-2";
 import "chart.js/auto";
 
-function AnalysisCharts({ result }) {
-  /* ---------- helpers ---------- */
+function AnalysisCharts({ result, studentName }) {
+  const [showStudentInsight, setShowStudentInsight] = useState(false);
+
+  /* ---------- Student POV Comparison Functions ---------- */
+  const getStudentIndex = () => {
+    if (!studentName || !result.patterns.comparison) return -1;
+    
+    const categories = result.patterns.comparison.categories;
+    return categories.findIndex(cat =>
+      cat.toLowerCase() === studentName.toLowerCase() ||
+      cat.toLowerCase().includes(studentName.toLowerCase())
+    );
+  };
+
+  const getStudentComparisonInsight = () => {
+    if (!studentName || !result.patterns.comparison) return "";
+    
+    const categories = result.patterns.comparison.categories;
+    const values = result.patterns.comparison.values.map(Number);
+    const studentIndex = getStudentIndex();
+    
+    if (studentIndex === -1) return "Your data could not be found in the dataset.";
+    
+    const studentValue = values[studentIndex];
+    const maxValue = Math.max(...values);
+    const minValue = Math.min(...values);
+    
+    // Rule 1: Student has the highest value
+    if (studentValue === maxValue) {
+      return "You top the dataset.";
+    }
+    
+    // Rule 2: Student has the lowest value
+    if (studentValue === minValue) {
+      return "You are currently at the bottom of the dataset and need improvement.";
+    }
+    
+    // Rule 3: Otherwise - find next higher and calculate percentages
+    const higherValues = values.filter(v => v > studentValue);
+    
+    if (higherValues.length === 0) {
+      return "You top the dataset.";
+    }
+    
+    const nextHigher = Math.min(...higherValues);
+    const percentToNext = ((nextHigher - studentValue) / studentValue * 100).toFixed(1);
+    const percentToTop = ((maxValue - studentValue) / studentValue * 100).toFixed(1);
+    
+    return `You are ${percentToNext}% away from the next higher performer and ${percentToTop}% away from topping the dataset.`;
+  };
+
+  const getStudentComparisonColors = () => {
+    if (!result.patterns.comparison) return [];
+    
+    const values = result.patterns.comparison.values.map(Number);
+    
+    // If no student context, use original admin colors
+    if (!studentName) {
+      const maxValue = Math.max(...values);
+      const minValue = Math.min(...values);
+      
+      return values.map((value) => {
+        if (value === maxValue) return "#4CAF50"; // Green for highest
+        if (value === minValue) return "#F44336"; // Red for lowest
+        return "#2196F3"; // Blue for others
+      });
+    }
+    
+    // Student POV: highlight student's bar, neutral for others
+    const studentIndex = getStudentIndex();
+    
+    return values.map((_, index) => {
+      if (index === studentIndex) {
+        return "#1F6FEB"; // Highlight color for student's bar
+      }
+      return "#8B949E"; // Neutral gray for other bars
+    });
+  };
+
+
   const buildHistogram = (values, binCount = 5) => {
     const nums = values.map(Number);
     const min = Math.min(...nums);
@@ -132,7 +211,15 @@ function AnalysisCharts({ result }) {
   return (
     <div className="charts-grid">
       {/* Comparison */}
-      <div className="chart-card">
+      <div
+        className="chart-card"
+        onClick={() => {
+          if (studentName) {
+            setShowStudentInsight(!showStudentInsight);
+          }
+        }}
+        style={{ cursor: studentName ? "pointer" : "default" }}
+      >
         <h3>Comparison Chart</h3>
         <Bar
           data={{
@@ -141,14 +228,29 @@ function AnalysisCharts({ result }) {
               {
                 label: "Average Performance",
                 data: result.patterns.comparison.values.map(Number),
-                backgroundColor: getComparisonBarColors(),
+                backgroundColor: getStudentComparisonColors(),
               },
             ],
           }}
         />
-        <div className="chart-insight">
-          📊 {getComparisonInsight()}
-        </div>
+        {studentName ? (
+          <>
+            {!showStudentInsight && (
+              <div className="chart-insight-prompt">
+                💡 Click to know about your analysis
+              </div>
+            )}
+            {showStudentInsight && (
+              <div className="chart-insight">
+                📊 {getStudentComparisonInsight()}
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="chart-insight">
+            📊 {getComparisonInsight()}
+          </div>
+        )}
       </div>
 
       {/* Trend */}

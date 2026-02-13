@@ -72,7 +72,7 @@ function StudentAnalysis({ result, csvData }) {
             Change Student
           </button>
         </div>
-        <AnalysisCharts result={result} />
+        <AnalysisCharts result={result} studentName={validatedName} />
       </div>
     );
   }
