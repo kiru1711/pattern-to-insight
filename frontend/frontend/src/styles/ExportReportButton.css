@@ -1,0 +1,61 @@
+/* ========================================
+   EXPORT PDF BUTTON
+   ======================================== */
+
+.export-pdf-btn {
+  padding: 0.6rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: inherit;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  background-color: #238636;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.export-pdf-btn:hover:not(:disabled) {
+  background-color: #2ea043;
+  border-color: #58a6ff;
+  box-shadow: 0 2px 8px rgba(36, 134, 54, 0.3);
+}
+
+.export-pdf-btn:active:not(:disabled) {
+  background-color: #1f6feb;
+  transform: scale(0.97);
+}
+
+.export-pdf-btn:focus {
+  outline: 2px solid #58a6ff;
+  outline-offset: 2px;
+}
+
+.export-pdf-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background-color: #21262d;
+  border-color: #30363d;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+  .export-pdf-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .export-pdf-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
+}

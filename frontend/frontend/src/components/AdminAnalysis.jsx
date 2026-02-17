@@ -1,9 +1,13 @@
+import { useRef } from "react";
 import AnalysisCharts from "./AnalysisCharts";
 import AdminSummaryCard from "./AdminSummaryCard";
 import AdminAttentionPanel from "./AdminAttentionPanel";
+import ExportReportButton from "./ExportReportButton";
 import "../styles/AdminAnalysis.css";
 
 function AdminAnalysis({ result, csvData }) {
+  const dashboardRef = useRef(null);
+  
   // Helper: Build dataset from CSV with all columns
   const buildDataset = () => {
     if (!csvData || csvData.length < 2) return [];
@@ -43,11 +47,20 @@ function AdminAnalysis({ result, csvData }) {
   const dataset = buildDataset();
   return (
     <div className="app-container">
-      <h2>📊 Admin Analysis Dashboard</h2>
-      <AdminSummaryCard dataset={dataset} />
-      <div className="admin-dashboard-wrapper">
-        <AnalysisCharts result={result} dataset={dataset} />
-        <AdminAttentionPanel dataset={dataset} />
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+        <h2>📊 Admin Analysis Dashboard</h2>
+        <ExportReportButton 
+          dashboardRef={dashboardRef} 
+          reportTitle="Admin Analytics Report"
+          fileName="admin-report"
+        />
+      </div>
+      <div ref={dashboardRef}>
+        <AdminSummaryCard dataset={dataset} />
+        <div className="admin-dashboard-wrapper">
+          <AnalysisCharts result={result} dataset={dataset} />
+          <AdminAttentionPanel dataset={dataset} />
+        </div>
       </div>
     </div>
   );

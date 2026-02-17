@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import StudentDashboard from "./StudentDashboard";
+import ExportReportButton from "./ExportReportButton";
 import "../styles/StudentAnalysis.css";
 
 function StudentAnalysis({ result, csvData }) {
+  const dashboardRef = useRef(null);
   const [studentName, setStudentName] = useState("");
   const [validatedName, setValidatedName] = useState(null);
   const [error, setError] = useState("");
@@ -91,7 +93,14 @@ function StudentAnalysis({ result, csvData }) {
   if (validatedName) {
     return (
       <div className="app-container">
-        <h2>👤 Student Analysis Dashboard</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <h2>👤 Student Analysis Dashboard</h2>
+          <ExportReportButton 
+            dashboardRef={dashboardRef} 
+            reportTitle={`Student Performance Report - ${validatedName}`}
+            fileName={`student-report-${validatedName}`}
+          />
+        </div>
         <div className="student-header">
           <p className="student-welcome">Welcome, <strong>{validatedName}</strong>!</p>
           <button 
@@ -105,7 +114,9 @@ function StudentAnalysis({ result, csvData }) {
             Change Student
           </button>
         </div>
-        <StudentDashboard result={result} studentName={validatedName} dataset={dataset} />
+        <div ref={dashboardRef}>
+          <StudentDashboard result={result} studentName={validatedName} dataset={dataset} />
+        </div>
       </div>
     );
   }
