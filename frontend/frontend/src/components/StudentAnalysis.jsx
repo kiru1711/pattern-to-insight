@@ -1,7 +1,5 @@
 import { useState } from "react";
-import AnalysisCharts from "./AnalysisCharts";
-import StudentSummaryCard from "./StudentSummaryCard";
-import SubjectInsightsCard from "./SubjectInsightsCard";
+import StudentDashboard from "./StudentDashboard";
 import "../styles/StudentAnalysis.css";
 
 function StudentAnalysis({ result, csvData }) {
@@ -107,9 +105,7 @@ function StudentAnalysis({ result, csvData }) {
             Change Student
           </button>
         </div>
-        <StudentSummaryCard studentName={validatedName} dataset={dataset} />
-        <SubjectInsightsCard studentName={validatedName} dataset={dataset} />
-        <AnalysisCharts result={result} studentName={validatedName} dataset={dataset} />
+        <StudentDashboard result={result} studentName={validatedName} dataset={dataset} />
       </div>
     );
   }

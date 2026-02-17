@@ -1,0 +1,101 @@
+/* ========================================
+   ADMIN DASHBOARD WRAPPER
+   ======================================== */
+
+.admin-dashboard-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  padding: 1.5rem 0;
+}
+
+/* Position charts grid to take up left column and span multiple rows */
+.admin-dashboard-wrapper .charts-grid {
+  display: contents;
+}
+
+/* Position each chart card in the grid */
+.admin-dashboard-wrapper .chart-card:nth-child(1) {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.admin-dashboard-wrapper .chart-card:nth-child(2) {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.admin-dashboard-wrapper .chart-card:nth-child(3) {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.admin-dashboard-wrapper .chart-card:nth-child(4) {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.admin-dashboard-wrapper .chart-card:nth-child(5) {
+  grid-column: 1;
+  grid-row: 3;
+}
+
+/* Position AdminAttentionPanel in bottom-right */
+.admin-dashboard-wrapper .attention-panel {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 1024px) {
+  .admin-dashboard-wrapper {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem 0;
+  }
+
+  .admin-dashboard-wrapper .chart-card:nth-child(1) {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .admin-dashboard-wrapper .chart-card:nth-child(2) {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .admin-dashboard-wrapper .chart-card:nth-child(3) {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .admin-dashboard-wrapper .chart-card:nth-child(4) {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .admin-dashboard-wrapper .chart-card:nth-child(5) {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .admin-dashboard-wrapper .attention-panel {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-dashboard-wrapper {
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-dashboard-wrapper {
+    gap: 0.5rem;
+  }
+}

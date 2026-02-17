@@ -1,0 +1,200 @@
+/* ========================================
+   ADMIN ATTENTION PANEL
+   ======================================== */
+
+.attention-panel {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.attention-panel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.attention-panel h3 {
+  font-size: 1.2rem;
+  color: #f0883e;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #30363d;
+}
+
+/* ========================================
+   EMPTY STATE
+   ======================================== */
+
+.empty-state {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.empty-state p {
+  font-size: 1rem;
+  color: #8b949e;
+  line-height: 1.6;
+}
+
+/* ========================================
+   TABLE WRAPPER
+   ======================================== */
+
+.attention-table-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+}
+
+/* ========================================
+   TABLE STYLING
+   ======================================== */
+
+.attention-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.attention-table thead {
+  background-color: #0d1117;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.attention-table th {
+  padding: 0.75rem;
+  text-align: left;
+  color: #f0883e;
+  font-weight: 600;
+  border-bottom: 2px solid #30363d;
+  white-space: nowrap;
+}
+
+.attention-table tbody tr {
+  border-bottom: 1px solid #30363d;
+  transition: background-color 0.2s ease;
+}
+
+.attention-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.attention-table tbody tr:hover {
+  background-color: #0d1117;
+}
+
+.attention-table td {
+  padding: 0.75rem;
+  color: #c9d1d9;
+}
+
+.student-name {
+  font-weight: 500;
+  color: #79c0ff;
+}
+
+.avg-score {
+  color: #ffa657;
+  font-weight: 600;
+}
+
+.weakest-subject {
+  color: #f85149;
+}
+
+.improvement-needed {
+  color: #d29922;
+  font-weight: 600;
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+
+.attention-footer {
+  padding-top: 1rem;
+  border-top: 1px solid #30363d;
+}
+
+.attention-metric {
+  font-size: 0.85rem;
+  color: #8b949e;
+  margin: 0;
+  text-align: center;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 1024px) {
+  .attention-panel {
+    min-height: 350px;
+  }
+
+  .attention-table {
+    font-size: 0.85rem;
+  }
+
+  .attention-table th,
+  .attention-table td {
+    padding: 0.6rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .attention-panel {
+    padding: 1rem;
+    min-height: 300px;
+  }
+
+  .attention-panel h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .attention-table {
+    font-size: 0.8rem;
+  }
+
+  .attention-table th,
+  .attention-table td {
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .attention-panel {
+    padding: 0.75rem;
+    min-height: 250px;
+  }
+
+  .attention-panel h3 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .attention-table {
+    font-size: 0.75rem;
+  }
+
+  .attention-table th,
+  .attention-table td {
+    padding: 0.4rem;
+  }
+}

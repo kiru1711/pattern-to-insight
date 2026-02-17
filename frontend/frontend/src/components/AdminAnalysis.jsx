@@ -1,5 +1,7 @@
 import AnalysisCharts from "./AnalysisCharts";
 import AdminSummaryCard from "./AdminSummaryCard";
+import AdminAttentionPanel from "./AdminAttentionPanel";
+import "../styles/AdminAnalysis.css";
 
 function AdminAnalysis({ result, csvData }) {
   // Helper: Build dataset from CSV with all columns
@@ -43,7 +45,10 @@ function AdminAnalysis({ result, csvData }) {
     <div className="app-container">
       <h2>📊 Admin Analysis Dashboard</h2>
       <AdminSummaryCard dataset={dataset} />
-      <AnalysisCharts result={result} dataset={dataset} />
+      <div className="admin-dashboard-wrapper">
+        <AnalysisCharts result={result} dataset={dataset} />
+        <AdminAttentionPanel dataset={dataset} />
+      </div>
     </div>
   );
 }
