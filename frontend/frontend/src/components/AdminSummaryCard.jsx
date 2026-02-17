@@ -1,4 +1,5 @@
 import React from 'react';
+import { calculateStudentAverage } from '../helpers/performanceHelpers';
 
 const AdminSummaryCard = ({ dataset }) => {
   // Helper: Get total students
@@ -6,23 +7,53 @@ const AdminSummaryCard = ({ dataset }) => {
     return dataset.length;
   };
 
-  // Helper: Get top 3 performers
+  // Helper: Get top 3 performers (use subject average if available, otherwise marks)
   const getTopPerformers = () => {
-    const sorted = [...dataset].sort((a, b) => b.marks - a.marks);
+    // Check if dataset has subject columns with actual values
+    const hasSubjects = dataset.some(s => (s.math || 0) > 0 || (s.biology || 0) > 0 || (s.physics || 0) > 0);
+
+    let sorted;
+    if (hasSubjects) {
+      // Sort by subject average
+      sorted = [...dataset]
+        .map(s => ({...s, performanceScore: calculateStudentAverage(s)}))
+        .sort((a, b) => b.performanceScore - a.performanceScore);
+    } else {
+      // Fall back to marks
+      sorted = [...dataset]
+        .map(s => ({...s, performanceScore: s.marks}))
+        .sort((a, b) => b.performanceScore - a.performanceScore);
+    }
     return sorted.slice(0, 3);
   };
 
-  // Helper: Calculate class average
+  // Helper: Calculate class average (use subject average if available, otherwise marks)
   const getClassAverage = () => {
     if (dataset.length === 0) return 0;
-    const total = dataset.reduce((sum, student) => sum + student.marks, 0);
-    return (total / dataset.length).toFixed(2);
+    
+    const hasSubjects = dataset.some(s => (s.math || 0) > 0 || (s.biology || 0) > 0 || (s.physics || 0) > 0);
+    
+    if (hasSubjects) {
+      // Average of subject averages
+      const total = dataset.reduce((sum, student) => sum + calculateStudentAverage(student), 0);
+      return (total / dataset.length).toFixed(2);
+    } else {
+      // Average of marks
+      const total = dataset.reduce((sum, student) => sum + (student.marks || 0), 0);
+      return (total / dataset.length).toFixed(2);
+    }
   };
 
   // Helper: Count students below average
   const getCountBelowAverage = () => {
     const average = parseFloat(getClassAverage());
-    return dataset.filter(student => student.marks < average).length;
+    const hasSubjects = dataset.some(s => (s.math || 0) > 0 || (s.biology || 0) > 0 || (s.physics || 0) > 0);
+    
+    if (hasSubjects) {
+      return dataset.filter(student => calculateStudentAverage(student) < average).length;
+    } else {
+      return dataset.filter(student => (student.marks || 0) < average).length;
+    }
   };
 
   const totalStudents = getTotalStudents();
@@ -44,7 +75,7 @@ const AdminSummaryCard = ({ dataset }) => {
               <div key={index} className="performer-item">
                 <span className="performer-rank">#{index + 1}</span>
                 <span className="performer-name">{performer.name}</span>
-                <span className="performer-marks">{performer.marks}</span>
+                <span className="performer-marks">{performer.performanceScore.toFixed(2)}</span>
               </div>
             ))}
           </div>

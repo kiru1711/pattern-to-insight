@@ -2,21 +2,40 @@ import AnalysisCharts from "./AnalysisCharts";
 import AdminSummaryCard from "./AdminSummaryCard";
 
 function AdminAnalysis({ result, csvData }) {
-  // Helper: Build dataset from CSV
+  // Helper: Build dataset from CSV with all columns
   const buildDataset = () => {
     if (!csvData || csvData.length < 2) return [];
     
     const headers = csvData[0].map(h => h.toLowerCase().trim());
-    const nameColIndex = headers.findIndex(h => h === 'name' || h === 'student');
-    const marksColIndex = headers.findIndex(h => h === 'marks' || h === 'score' || h === 'performance' || h === 'value');
     
-    const actualNameIdx = nameColIndex >= 0 ? nameColIndex : 0;
-    const actualMarksIdx = marksColIndex >= 0 ? marksColIndex : 1;
+    // Find column indices
+    let nameColumnIndex = headers.findIndex(
+      (h) => h === "name" || h === "student"
+    );
+    if (nameColumnIndex === -1) nameColumnIndex = 0;
     
-    return csvData.slice(1).map(row => ({
-      name: row[actualNameIdx] || 'Unknown',
-      marks: parseFloat(row[actualMarksIdx]) || 0
-    }));
+    let marksColumnIndex = headers.findIndex(
+      (h) => {
+        return h === "marks" || 
+               h === "score" || 
+               h === "performance" ||
+               h === "value";
+      }
+    );
+    if (marksColumnIndex === -1) marksColumnIndex = 1;
+    
+    let mathColumnIndex = headers.findIndex(h => h === "math");
+    let biologyColumnIndex = headers.findIndex(h => h === "biology");
+    let physicsColumnIndex = headers.findIndex(h => h === "physics");
+    
+    // Build dataset with all fields
+    return csvData.slice(1).map((row) => ({
+      name: row[nameColumnIndex],
+      marks: parseFloat(row[marksColumnIndex]) || 0,
+      math: parseFloat(row[mathColumnIndex]) || 0,
+      biology: parseFloat(row[biologyColumnIndex]) || 0,
+      physics: parseFloat(row[physicsColumnIndex]) || 0,
+    })).filter(item => item.name);
   };
 
   const dataset = buildDataset();
@@ -24,7 +43,7 @@ function AdminAnalysis({ result, csvData }) {
     <div className="app-container">
       <h2>📊 Admin Analysis Dashboard</h2>
       <AdminSummaryCard dataset={dataset} />
-      <AnalysisCharts result={result} />
+      <AnalysisCharts result={result} dataset={dataset} />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import AnalysisCharts from "./AnalysisCharts";
 import StudentSummaryCard from "./StudentSummaryCard";
+import SubjectInsightsCard from "./SubjectInsightsCard";
 import "../styles/StudentAnalysis.css";
 
 function StudentAnalysis({ result, csvData }) {
@@ -56,34 +57,34 @@ function StudentAnalysis({ result, csvData }) {
     }
   };
 
-  // Build dataset from CSV for StudentSummaryCard
+  // Build dataset from CSV for StudentSummaryCard and SubjectInsightsCard
   const buildDataset = () => {
     if (!csvData || csvData.length < 2) return [];
     
-    const headers = csvData[0];
+    const headers = csvData[0].map(h => h.toLowerCase().trim());
     
-    // Find name column (index 0 if not found)
+    // Find column indices
     let nameColumnIndex = headers.findIndex(
-      (h) => h.toLowerCase() === "name" || h.toLowerCase() === "student"
+      (h) => h === "name" || h === "student"
     );
     if (nameColumnIndex === -1) nameColumnIndex = 0;
     
-    // Find marks column
     let marksColumnIndex = headers.findIndex(
-      (h) => {
-        const lowerH = h.toLowerCase();
-        return lowerH === "marks" || 
-               lowerH === "score" || 
-               lowerH === "performance" ||
-               lowerH === "value";
-      }
+      (h) => h === "marks" || h === "score" || h === "performance" || h === "value"
     );
-    if (marksColumnIndex === -1) marksColumnIndex = 1; // Default to second column
+    if (marksColumnIndex === -1) marksColumnIndex = 1;
     
-    // Build dataset
+    let mathColumnIndex = headers.findIndex(h => h === "math");
+    let biologyColumnIndex = headers.findIndex(h => h === "biology");
+    let physicsColumnIndex = headers.findIndex(h => h === "physics");
+    
+    // Build dataset with all fields
     return csvData.slice(1).map((row) => ({
       name: row[nameColumnIndex],
       marks: parseFloat(row[marksColumnIndex]) || 0,
+      math: parseFloat(row[mathColumnIndex]) || 0,
+      biology: parseFloat(row[biologyColumnIndex]) || 0,
+      physics: parseFloat(row[physicsColumnIndex]) || 0,
     })).filter(item => item.name);
   };
 
@@ -107,7 +108,8 @@ function StudentAnalysis({ result, csvData }) {
           </button>
         </div>
         <StudentSummaryCard studentName={validatedName} dataset={dataset} />
-        <AnalysisCharts result={result} studentName={validatedName} />
+        <SubjectInsightsCard studentName={validatedName} dataset={dataset} />
+        <AnalysisCharts result={result} studentName={validatedName} dataset={dataset} />
       </div>
     );
   }

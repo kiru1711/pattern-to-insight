@@ -1,15 +1,56 @@
 import { useState } from "react";
 import { Line, Bar } from "react-chartjs-2";
 import "chart.js/auto";
+import { calculateStudentAverage, calculateSubjectAverages, calculateClassAverage } from "../helpers/performanceHelpers";
 
-function AnalysisCharts({ result, studentName }) {
+function AnalysisCharts({ result, studentName, dataset }) {
   const [showStudentInsight, setShowStudentInsight] = useState(false);
+
+  /* ---------- Helper: Compute subject-based comparison data ---------- */
+  const getSubjectBasedComparisonData = () => {
+    if (!dataset || dataset.length === 0) {
+      // Fallback to result data if no dataset provided
+      return {
+        categories: result.patterns.comparison.categories,
+        values: result.patterns.comparison.values
+      };
+    }
+
+    // Check if dataset has subject columns (math, biology, physics) with actual values
+    const hasSubjects = dataset.some(s => (s.math || 0) > 0 || (s.biology || 0) > 0 || (s.physics || 0) > 0);
+
+    let sortedByAverage;
+    if (hasSubjects) {
+      // Use subject averages
+      sortedByAverage = [...dataset]
+        .map(student => ({
+          name: student.name,
+          average: calculateStudentAverage(student)
+        }))
+        .sort((a, b) => b.average - a.average);
+    } else {
+      // Fall back to marks column
+      sortedByAverage = [...dataset]
+        .map(student => ({
+          name: student.name,
+          average: student.marks || 0
+        }))
+        .sort((a, b) => b.average - a.average);
+    }
+
+    return {
+      categories: sortedByAverage.map(s => s.name),
+      values: sortedByAverage.map(s => s.average)
+    };
+  };
+
+  const comparisonData = getSubjectBasedComparisonData();
 
   /* ---------- Student POV Comparison Functions ---------- */
   const getStudentIndex = () => {
-    if (!studentName || !result.patterns.comparison) return -1;
+    if (!studentName) return -1;
     
-    const categories = result.patterns.comparison.categories;
+    const categories = comparisonData.categories;
     return categories.findIndex(cat =>
       cat.toLowerCase() === studentName.toLowerCase() ||
       cat.toLowerCase().includes(studentName.toLowerCase())
@@ -17,10 +58,10 @@ function AnalysisCharts({ result, studentName }) {
   };
 
   const getStudentComparisonInsight = () => {
-    if (!studentName || !result.patterns.comparison) return "";
+    if (!studentName) return "";
     
-    const categories = result.patterns.comparison.categories;
-    const values = result.patterns.comparison.values.map(Number);
+    const categories = comparisonData.categories;
+    const values = comparisonData.values.map(Number);
     const studentIndex = getStudentIndex();
     
     if (studentIndex === -1) return "Your data could not be found in the dataset.";
@@ -54,9 +95,7 @@ function AnalysisCharts({ result, studentName }) {
   };
 
   const getStudentComparisonColors = () => {
-    if (!result.patterns.comparison) return [];
-    
-    const values = result.patterns.comparison.values.map(Number);
+    const values = comparisonData.values.map(Number);
     
     // If no student context, use original admin colors
     if (!studentName) {
@@ -135,9 +174,8 @@ function AnalysisCharts({ result, studentName }) {
 
   // Comparison chart helpers
   const getComparisonInsight = () => {
-    if (!result) return "";
-    const values = result.patterns.comparison.values.map(Number);
-    const categories = result.patterns.comparison.categories;
+    const values = comparisonData.values.map(Number);
+    const categories = comparisonData.categories;
     
     const maxValue = Math.max(...values);
     const minValue = Math.min(...values);
@@ -150,8 +188,7 @@ function AnalysisCharts({ result, studentName }) {
   };
 
   const getComparisonBarColors = () => {
-    if (!result) return [];
-    const values = result.patterns.comparison.values.map(Number);
+    const values = comparisonData.values.map(Number);
     const maxValue = Math.max(...values);
     const minValue = Math.min(...values);
     
@@ -204,6 +241,132 @@ function AnalysisCharts({ result, studentName }) {
     }
   };
 
+  /* ---------- Student Subject Performance Functions ---------- */
+  const getStudentSubjectData = () => {
+    if (!dataset || !studentName) return null;
+    
+    // Find student in dataset
+    const student = dataset.find(s => 
+      s.name.toLowerCase() === studentName.toLowerCase()
+    );
+    
+    if (!student) return null;
+    
+    return {
+      name: student.name,
+      math: student.math || 0,
+      biology: student.biology || 0,
+      physics: student.physics || 0
+    };
+  };
+
+  const getSubjectClassAverages = () => {
+    if (!dataset) return { math: 0, biology: 0, physics: 0 };
+    return calculateSubjectAverages(dataset);
+  };
+
+  const getStudentSubjectInsight = () => {
+    const studentData = getStudentSubjectData();
+    const classAvgs = getSubjectClassAverages();
+    
+    if (!studentData) return "Student data not found.";
+    
+    const strengths = [];
+    const improvements = [];
+    
+    // Check each subject
+    [
+      { subject: "Math", score: studentData.math, classAvg: classAvgs.math },
+      { subject: "Biology", score: studentData.biology, classAvg: classAvgs.biology },
+      { subject: "Physics", score: studentData.physics, classAvg: classAvgs.physics }
+    ].forEach(item => {
+      if (item.score > item.classAvg) {
+        strengths.push(`${item.subject} (${item.score})`);
+      } else if (item.score < item.classAvg) {
+        improvements.push(`${item.subject} (${item.score})`);
+      }
+    });
+    
+    let insight = "";
+    if (strengths.length > 0) {
+      insight += `Strengths: ${strengths.join(", ")}. `;
+    }
+    if (improvements.length > 0) {
+      insight += `Areas for improvement: ${improvements.join(", ")}.`;
+    }
+    if (strengths.length === 0 && improvements.length === 0) {
+      insight = "Your performance is consistent across all subjects.";
+    }
+    
+    return insight;
+  };
+
+  /* ---------- Distribution Chart Functions ---------- */
+  const getStudentDistributionPosition = () => {
+    const studentData = getStudentSubjectData();
+    if (!studentData || !bins) return -1;
+
+    const studentAverage = calculateStudentAverage(studentData);
+    
+    // Find which bin the student falls into
+    for (let i = 0; i < bins.length; i++) {
+      const bin = bins[i];
+      // Parse bin label to get range
+      const [minStr, maxStr] = bin.label.split('–');
+      const min = parseFloat(minStr);
+      const max = parseFloat(maxStr);
+      
+      if (studentAverage >= min && studentAverage <= max) {
+        return i;
+      }
+    }
+    return -1;
+  };
+
+  const getDistributionBinColors = () => {
+    if (!studentName) {
+      // Admin mode: use default color
+      return bins.map(() => "#9C27B0");
+    }
+    
+    // Student mode: highlight student's bin
+    const studentBinIndex = getStudentDistributionPosition();
+    return bins.map((_, index) => 
+      index === studentBinIndex ? "#1F6FEB" : "#9C27B0"
+    );
+  };
+
+  const getStudentDistributionInsight = () => {
+    const studentData = getStudentSubjectData();
+    if (!studentData) return "Student data not found.";
+
+    const studentAverage = calculateStudentAverage(studentData);
+    const classAverage = calculateClassAverage(dataset);
+    
+    // Determine range
+    let range = "average";
+    if (studentAverage > classAverage) {
+      range = "above average";
+    } else if (studentAverage < classAverage) {
+      range = "below average";
+    }
+
+    // Classify into high/average/lower based on percentile
+    const sorted = [...dataset]
+      .map(s => calculateStudentAverage(s))
+      .sort((a, b) => a - b);
+    
+    const percentile = (sorted.filter(v => v <= studentAverage).length / sorted.length) * 100;
+    let classification = "lower range";
+    if (percentile > 75) {
+      classification = "upper range";
+    } else if (percentile > 50) {
+      classification = "middle range";
+    }
+
+    return `Your score of ${studentAverage.toFixed(2)} places you in the ${classification} of the class distribution (${range}).`;
+  };
+
   if (!result) {
     return <div>Loading...</div>;
   }
@@ -223,11 +386,11 @@ function AnalysisCharts({ result, studentName }) {
         <h3>Comparison Chart</h3>
         <Bar
           data={{
-            labels: result.patterns.comparison.categories,
+            labels: comparisonData.categories,
             datasets: [
               {
                 label: "Average Performance",
-                data: result.patterns.comparison.values.map(Number),
+                data: comparisonData.values.map(Number),
                 backgroundColor: getStudentComparisonColors(),
               },
             ],
@@ -253,27 +416,73 @@ function AnalysisCharts({ result, studentName }) {
         )}
       </div>
 
-      {/* Trend */}
+      {/* Trend / Subject Performance */}
       <div className="chart-card">
-        <h3>Trend Chart</h3>
-        <Line
-          data={{
-            labels: result.patterns.trend.values.map(
-              (_, i) => `Point ${i + 1}`
-            ),
-            datasets: [
-              {
-                label: "Trend",
-                data: result.patterns.trend.values.map(Number),
-                borderColor: "#03A9F4",
-                tension: 0.3,
-              },
-            ],
-          }}
-        />
-        <div className="chart-insight">
-          📈 {result.patterns.trend.insight}
-        </div>
+        <h3>{studentName ? "Subject Performance" : "Trend Chart"}</h3>
+        {studentName ? (
+          <>
+            <Line
+              data={{
+                labels: ["Math", "Biology", "Physics"],
+                datasets: [
+                  {
+                    label: "Your Performance",
+                    data: [
+                      getStudentSubjectData()?.math || 0,
+                      getStudentSubjectData()?.biology || 0,
+                      getStudentSubjectData()?.physics || 0
+                    ],
+                    borderColor: "#1F6FEB",
+                    backgroundColor: "rgba(31, 111, 235, 0.1)",
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 6,
+                    pointBackgroundColor: "#1F6FEB"
+                  },
+                  {
+                    label: "Class Average",
+                    data: [
+                      getSubjectClassAverages().math,
+                      getSubjectClassAverages().biology,
+                      getSubjectClassAverages().physics
+                    ],
+                    borderColor: "#8B949E",
+                    backgroundColor: "rgba(139, 148, 158, 0.05)",
+                    borderDash: [5, 5],
+                    tension: 0.3,
+                    fill: false,
+                    pointRadius: 4,
+                    pointBackgroundColor: "#8B949E"
+                  }
+                ],
+              }}
+            />
+            <div className="chart-insight">
+              📚 {getStudentSubjectInsight()}
+            </div>
+          </>
+        ) : (
+          <>
+            <Line
+              data={{
+                labels: result.patterns.trend.values.map(
+                  (_, i) => `Point ${i + 1}`
+                ),
+                datasets: [
+                  {
+                    label: "Trend",
+                    data: result.patterns.trend.values.map(Number),
+                    borderColor: "#03A9F4",
+                    tension: 0.3,
+                  },
+                ],
+              }}
+            />
+            <div className="chart-insight">
+              📈 {result.patterns.trend.insight}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Distribution */}
@@ -286,13 +495,13 @@ function AnalysisCharts({ result, studentName }) {
               {
                 label: "Frequency",
                 data: bins.map((b) => b.count),
-                backgroundColor: "#9C27B0",
+                backgroundColor: getDistributionBinColors(),
               },
             ],
           }}
         />
         <div className="chart-insight">
-          📦 {result.patterns.distribution.insight}
+          📦 {studentName ? getStudentDistributionInsight() : result.patterns.distribution.insight}
         </div>
       </div>
 
