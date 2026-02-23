@@ -16,7 +16,7 @@ function UploadPage({ onAnalysisComplete }) {
     formData.append("file", file);
 
     try {
-      const response = await fetch("https://pattern-to-insight.onrender.com/upload", {
+      const response = await fetch("https://pattern-to-insight.onrender.com/upload/", {
         method: "POST",
         body: formData,
       });
