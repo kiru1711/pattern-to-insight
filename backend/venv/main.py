@@ -16,8 +16,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173",
-    "https://kiru1711-pattern-to-insight-vercel.vercel.app",
-    "https://kiru1711-pattern-to-insight-vercel-okeo8uuto.vercel.app"],
+    "https://kiru1711-pattern-to-insight-vercel.vercel.app"],
 
     allow_credentials=True,
     allow_methods=["*"],
