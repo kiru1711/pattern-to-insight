@@ -16,10 +16,11 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173",
-    "https://kiru1711-pattern-to-insight-vercel.vercel.app"],
+    "https://pattern-to-insight.vercel.app"],
 
     allow_credentials=True,
     allow_methods=["*"],
+    allow_origins=["*"],
     allow_headers=["*"],
 )
 
