@@ -6,36 +6,41 @@ import AdminAnalysis from "./components/AdminAnalysis";
 import StudentAnalysis from "./components/StudentAnalysis";
 
 function UploadPage({ onAnalysisComplete }) {
+  const [loading, setLoading] = useState(false);
   const [file, setFile] = useState(null);
   const navigate = useNavigate();
 
   const handleUpload = async () => {
-    if (!file) return alert("Please select a CSV file");
+  if (!file) return alert("Please select a CSV file");
 
-    const formData = new FormData();
-    formData.append("file", file);
+  const formData = new FormData();
+  formData.append("file", file);
 
-    try {
-      const response = await fetch("https://pattern-to-insight.onrender.com/upload/", {
-        method: "POST",
-        body: formData,
-      });
+  try {
+    setLoading(true); // ← added
 
-      const data = await response.json();
-      
-      // Parse CSV to get raw data for name validation
-      const csvText = await file.text();
-      const csvRows = csvText.split('\n').filter(row => row.trim());
-      const csvData = csvRows.map(row => 
-        row.split(',').map(cell => cell.trim())
-      );
+    const response = await fetch("https://pattern-to-insight.onrender.com/upload/", {
+      method: "POST",
+      body: formData,
+    });
 
-      onAnalysisComplete(data, csvData);
-      navigate("/role-selection");
-    } catch (error) {
-      alert("Error uploading file: " + error.message);
-    }
-  };
+    const data = await response.json();
+    
+    const csvText = await file.text();
+    const csvRows = csvText.split('\n').filter(row => row.trim());
+    const csvData = csvRows.map(row => 
+      row.split(',').map(cell => cell.trim())
+    );
+
+    onAnalysisComplete(data, csvData);
+    navigate("/role-selection");
+
+    setLoading(false); // ← added
+  } catch (error) {
+    setLoading(false); // ← added
+    alert("Error uploading file: " + error.message);
+  }
+};
 
   return (
     <div className="landing">
@@ -72,13 +77,13 @@ function UploadPage({ onAnalysisComplete }) {
           />
         </label>
 
-        <button
-          className="analyze-btn"
-          onClick={handleUpload}
-          disabled={!file}
-        >
-          Analyze Dataset
-        </button>
+        <button 
+  onClick={handleUpload}
+  disabled={loading}
+  style={{ opacity: loading ? 0.6 : 1 }}
+>
+  {loading ? "Analyzing dataset..." : "Analyze Dataset"}
+</button>
       </div>
     </div>
   );
