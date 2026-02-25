@@ -78,6 +78,7 @@ function UploadPage({ onAnalysisComplete }) {
         </label>
 
         <button 
+  className="analyze-btn"
   onClick={handleUpload}
   disabled={loading}
   style={{ opacity: loading ? 0.6 : 1 }}
