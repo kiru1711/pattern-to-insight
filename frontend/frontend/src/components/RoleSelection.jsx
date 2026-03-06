@@ -6,7 +6,7 @@ function RoleSelection({ onRoleSelect }) {
 
   const handleAdminSelect = () => {
     onRoleSelect("admin");
-    navigate("/analysis/admin");
+    navigate("/admin/login");
   };
 
   const handleStudentSelect = () => {

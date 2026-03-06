@@ -4,43 +4,64 @@ import "chart.js/auto";
 import RoleSelection from "./components/RoleSelection";
 import AdminAnalysis from "./components/AdminAnalysis";
 import StudentAnalysis from "./components/StudentAnalysis";
+import AdminLogin from "./components/AdminLogin";
 
 function UploadPage({ onAnalysisComplete }) {
-  const [loading, setLoading] = useState(false);
   const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
 
   const handleUpload = async () => {
-  if (!file) return alert("Please select a CSV file");
+    if (!file) return alert("Please select a CSV file");
 
-  const formData = new FormData();
-  formData.append("file", file);
+    const formData = new FormData();
+    formData.append("file", file);
 
-  try {
-    setLoading(true); // ← added
+    try {
+      setLoading(true);
+      setProgress(0);
 
-    const response = await fetch("https://pattern-to-insight.onrender.com/upload/", {
-      method: "POST",
-      body: formData,
-    });
+      // Start progress animation
+      const progressInterval = setInterval(() => {
+        setProgress((prev) => {
+          // Stop at 90% while waiting for backend
+          if (prev >= 90) return 90;
+          return prev + 10;
+        });
+      }, 400);
 
-    const data = await response.json();
-    
-    const csvText = await file.text();
-    const csvRows = csvText.split('\n').filter(row => row.trim());
-    const csvData = csvRows.map(row => 
-      row.split(',').map(cell => cell.trim())
-    );
+      const response = await fetch("http://127.0.0.1:8000/upload/", {
+        method: "POST",
+        body: formData,
+      });
 
-    onAnalysisComplete(data, csvData);
-    navigate("/role-selection");
+      const data = await response.json();
+      
+      const csvText = await file.text();
+      const csvRows = csvText.split('\n').filter(row => row.trim());
+      const csvData = csvRows.map(row => 
+        row.split(',').map(cell => cell.trim())
+      );
 
-    setLoading(false); // ← added
-  } catch (error) {
-    setLoading(false); // ← added
-    alert("Error uploading file: " + error.message);
-  }
-};
+      // Complete progress
+      clearInterval(progressInterval);
+      setProgress(100);
+
+      // Wait briefly to show 100% before navigating
+      setTimeout(() => {
+        onAnalysisComplete(data, csvData);
+        navigate("/role-selection");
+        setLoading(false);
+        setProgress(0);
+      }, 500);
+
+    } catch (error) {
+      setLoading(false);
+      setProgress(0);
+      alert("Error uploading file: " + error.message);
+    }
+  };
 
   return (
     <div className="landing">
@@ -78,13 +99,25 @@ function UploadPage({ onAnalysisComplete }) {
         </label>
 
         <button 
-  className="analyze-btn"
-  onClick={handleUpload}
-  disabled={loading}
-  style={{ opacity: loading ? 0.6 : 1 }}
->
-  {loading ? "Analyzing dataset..." : "Analyze Dataset"}
-</button>
+          className="analyze-btn"
+          onClick={handleUpload}
+          disabled={loading}
+          style={{ opacity: loading ? 0.6 : 1 }}
+        >
+          {loading ? "Analyzing Dataset..." : "Analyze Dataset"}
+        </button>
+
+        {loading && (
+          <div className="progress-container">
+            <div className="progress-bar">
+              <div 
+                className="progress-fill" 
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+            <div className="progress-text">{progress}%</div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -113,6 +146,10 @@ function App() {
         <Route 
           path="/role-selection" 
           element={<RoleSelection onRoleSelect={handleRoleSelect} />} 
+        />
+        <Route 
+          path="/admin/login" 
+          element={<AdminLogin />} 
         />
         <Route 
           path="/analysis/admin" 

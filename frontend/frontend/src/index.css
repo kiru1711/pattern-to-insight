@@ -233,6 +233,41 @@ a:hover {
   outline-offset: 2px;
 }
 
+/* ========== Progress Bar ========== */
+
+.progress-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: -0.5rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #161b22;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #30363d;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #238636 0%, #2ea043 50%, #58a6ff 100%);
+  border-radius: 10px;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px rgba(35, 134, 54, 0.5);
+}
+
+.progress-text {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #8b949e;
+  font-weight: 500;
+}
+
 /* ========== Threshold Summary ========== */
 
 .threshold-summary {
