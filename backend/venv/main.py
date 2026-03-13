@@ -212,12 +212,20 @@ async def upload_dataset(file: UploadFile = File(...), db: Session = Depends(get
             # Get all column names except "Name" - these are subjects
             subject_columns = [col for col in df.columns if col != "Name"]
             
+            # Track seen student names to avoid duplicates
+            seen_names = set()
+            
             # Process each student record
             for _, row in df.iterrows():
                 student_name = str(row["Name"]).strip()
                 
                 if not student_name:
                     continue  # Skip empty names
+                
+                if student_name in seen_names:
+                    continue  # Skip duplicate student names
+                
+                seen_names.add(student_name)
                 
                 # Extract scores for all subjects
                 scores_dict = {}
@@ -237,21 +245,13 @@ async def upload_dataset(file: UploadFile = File(...), db: Session = Depends(get
                 else:
                     average_score = 0.0
                 
-                # Check if student already exists
-                existing_student = db.query(Student).filter(Student.name == student_name).first()
-                
-                if existing_student:
-                    # Update existing student
-                    existing_student.scores = scores_dict
-                    existing_student.average = average_score
-                else:
-                    # Create new student record
-                    new_student = Student(
-                        name=student_name,
-                        scores=scores_dict,
-                        average=average_score
-                    )
-                    db.add(new_student)
+                # Create new student record (duplicates already filtered above)
+                new_student = Student(
+                    name=student_name,
+                    scores=scores_dict,
+                    average=average_score
+                )
+                db.add(new_student)
             
             # Commit all changes to database
             db.commit()
