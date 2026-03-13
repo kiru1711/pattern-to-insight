@@ -32,7 +32,7 @@ function AdminAnalysis({ result, csvData }) {
 
   const fetchStudents = useCallback(async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/students");
+      const response = await fetch("https://pattern-to-insight.onrender.com/students");
       const data = await response.json();
       return data;
     } catch (error) {
@@ -69,7 +69,7 @@ function AdminAnalysis({ result, csvData }) {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/students", {
+      const response = await fetch("https://pattern-to-insight.onrender.com/students", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -103,7 +103,7 @@ function AdminAnalysis({ result, csvData }) {
     }
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/students/${studentId}`, {
+      const response = await fetch(`https://pattern-to-insight.onrender.com/students/${studentId}`, {
         method: "DELETE",
       });
 
