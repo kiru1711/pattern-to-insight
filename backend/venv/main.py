@@ -409,6 +409,7 @@ def register_admin(request: AdminRegisterRequest, db: Session = Depends(get_db))
         }
     
     # Hash the password
+    password = password[:72]
     hashed_password = pwd_context.hash(password)
     
     # Create new admin
