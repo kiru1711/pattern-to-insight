@@ -187,69 +187,77 @@ async def upload_dataset(file: UploadFile = File(...), db: Session = Depends(get
     numeric_col = result["numeric_columns"][0]
     categorical_col = result["categorical_columns"][0]
 
-    patterns = {
-    "comparison": comparison_pattern(df, categorical_col, numeric_col),
-    "trend": trend_pattern(df, numeric_col),
-    "correlation": correlation_pattern(df, numeric_col),
-    "distribution": distribution_pattern(df, numeric_col),
-    "anomaly": anomaly_pattern(df, numeric_col),
-    "threshold": threshold_pattern(df, numeric_col)
-}
+    try:
+        patterns = {
+            "comparison": comparison_pattern(df, categorical_col, numeric_col),
+            "trend": trend_pattern(df, numeric_col),
+            "correlation": correlation_pattern(df, numeric_col),
+            "distribution": distribution_pattern(df, numeric_col),
+            "anomaly": anomaly_pattern(df, numeric_col),
+            "threshold": threshold_pattern(df, numeric_col)
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Pattern analysis failed: {str(exc)}") from exc
 
     # ============================================================
     # NEW: Store student data in SQLite database
     # ============================================================
     # Check if the CSV contains student data (has "Name" column)
-    if "Name" in df.columns:
-        db.query(Student).delete()
-        db.commit()
-        # Get all column names except "Name" - these are subjects
-        subject_columns = [col for col in df.columns if col != "Name"]
-        
-        # Process each student record
-        for _, row in df.iterrows():
-            student_name = str(row["Name"]).strip()
-            
-            # Extract scores for all subjects
-            scores_dict = {}
-            for subject in subject_columns:
-                try:
-                    subject_value = row[subject]
-                    if pd.isna(subject_value):
-                        scores_dict[subject] = 0.0
-                    else:
-                        scores_dict[subject] = float(subject_value)
-                except (ValueError, TypeError):
-                    scores_dict[subject] = 0.0
-            
-            # Calculate average across all subjects
-            if scores_dict:
-                average_score = sum(scores_dict.values()) / len(scores_dict)
-            else:
-                average_score = 0.0
-            
-            # Check if student already exists
-            existing_student = db.query(Student).filter(Student.name == student_name).first()
-            
-            if existing_student:
-                # Update existing student
-                existing_student.scores = scores_dict
-                existing_student.average = average_score
-            else:
-                # Create new student record
-                new_student = Student(
-                    name=student_name,
-                    scores=scores_dict,
-                    average=average_score
-                )
-                db.add(new_student)
-        
-        # Commit all changes to database
-        try:
+    try:
+        if "Name" in df.columns:
+            # Clear existing students
+            db.query(Student).delete()
             db.commit()
-        except Exception as exc:
-            db.rollback()
-            raise HTTPException(status_code=500, detail=f"Failed to store student data: {str(exc)}") from exc
+            
+            # Get all column names except "Name" - these are subjects
+            subject_columns = [col for col in df.columns if col != "Name"]
+            
+            # Process each student record
+            for _, row in df.iterrows():
+                student_name = str(row["Name"]).strip()
+                
+                if not student_name:
+                    continue  # Skip empty names
+                
+                # Extract scores for all subjects
+                scores_dict = {}
+                for subject in subject_columns:
+                    try:
+                        subject_value = row[subject]
+                        if pd.isna(subject_value):
+                            scores_dict[subject] = 0.0
+                        else:
+                            scores_dict[subject] = float(subject_value)
+                    except (ValueError, TypeError):
+                        scores_dict[subject] = 0.0
+                
+                # Calculate average across all subjects
+                if scores_dict:
+                    average_score = sum(scores_dict.values()) / len(scores_dict)
+                else:
+                    average_score = 0.0
+                
+                # Check if student already exists
+                existing_student = db.query(Student).filter(Student.name == student_name).first()
+                
+                if existing_student:
+                    # Update existing student
+                    existing_student.scores = scores_dict
+                    existing_student.average = average_score
+                else:
+                    # Create new student record
+                    new_student = Student(
+                        name=student_name,
+                        scores=scores_dict,
+                        average=average_score
+                    )
+                    db.add(new_student)
+            
+            # Commit all changes to database
+            db.commit()
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to store student data: {str(exc)}") from exc
 
     return {
     "valid": True,
