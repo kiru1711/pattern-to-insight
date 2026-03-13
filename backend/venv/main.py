@@ -201,6 +201,8 @@ async def upload_dataset(file: UploadFile = File(...), db: Session = Depends(get
     # ============================================================
     # Check if the CSV contains student data (has "Name" column)
     if "Name" in df.columns:
+        db.query(Student).delete()
+        db.commit()
         # Get all column names except "Name" - these are subjects
         subject_columns = [col for col in df.columns if col != "Name"]
         
