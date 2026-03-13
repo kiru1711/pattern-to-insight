@@ -43,6 +43,7 @@ CSV upload → process data → save each student (name, subject scores, average
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
 from sqlalchemy.orm import Session
+from io import BytesIO
 import pandas as pd
 import re
 from services.validator import validate_dataset
@@ -163,10 +164,20 @@ def health_check():
 
 @app.post("/upload")
 async def upload_dataset(file: UploadFile = File(...), db: Session = Depends(get_db)):
-    if not file.filename.endswith(".csv"):
+    filename = (file.filename or "").strip()
+    if not filename.lower().endswith(".csv"):
         return {"error": "Only CSV files are supported"}
 
-    df = pd.read_csv(file.file)
+    try:
+        file_content = await file.read()
+        if not file_content:
+            return {"error": "Uploaded file is empty"}
+
+        df = pd.read_csv(BytesIO(file_content))
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=f"Could not read CSV file: {str(exc)}") from exc
+    finally:
+        await file.close()
 
     is_valid, result = validate_dataset(df)
 
@@ -201,7 +212,11 @@ async def upload_dataset(file: UploadFile = File(...), db: Session = Depends(get
             scores_dict = {}
             for subject in subject_columns:
                 try:
-                    scores_dict[subject] = float(row[subject])
+                    subject_value = row[subject]
+                    if pd.isna(subject_value):
+                        scores_dict[subject] = 0.0
+                    else:
+                        scores_dict[subject] = float(subject_value)
                 except (ValueError, TypeError):
                     scores_dict[subject] = 0.0
             
@@ -228,7 +243,11 @@ async def upload_dataset(file: UploadFile = File(...), db: Session = Depends(get
                 db.add(new_student)
         
         # Commit all changes to database
-        db.commit()
+        try:
+            db.commit()
+        except Exception as exc:
+            db.rollback()
+            raise HTTPException(status_code=500, detail=f"Failed to store student data: {str(exc)}") from exc
 
     return {
     "valid": True,
