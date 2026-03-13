@@ -19,6 +19,7 @@ function AdminAnalysis({ result, csvData }) {
     Chemistry: ""
   });
   const [message, setMessage] = useState({ text: "", type: "" });
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Check authentication on component mount
   useEffect(() => {
@@ -164,6 +165,9 @@ function AdminAnalysis({ result, csvData }) {
   };
 
   const adminData = JSON.parse(localStorage.getItem("admin") || "null");
+  const filteredStudents = students.filter((student) =>
+    (student.name || "").toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="app-container">
@@ -220,6 +224,24 @@ function AdminAnalysis({ result, csvData }) {
           >
             {showAddStudent ? '✕ Cancel' : '+ Add Student'}
           </button>
+        </div>
+
+        <div style={{ marginBottom: '1rem' }}>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search student..."
+            style={{
+              width: '100%',
+              padding: '0.5rem',
+              background: '#0d1117',
+              border: '1px solid #30363d',
+              borderRadius: '6px',
+              color: '#c9d1d9',
+              fontSize: '0.95rem'
+            }}
+          />
         </div>
 
         {message.text && (
@@ -307,16 +329,20 @@ function AdminAnalysis({ result, csvData }) {
         {/* Students List */}
         <div style={{ marginTop: '1rem' }}>
           <h4 style={{ color: '#8b949e', fontSize: '0.9rem', marginBottom: '0.75rem' }}>
-            All Students ({students.length})
+            All Students ({filteredStudents.length})
           </h4>
           <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
             {students.length === 0 ? (
               <p style={{ color: '#8b949e', textAlign: 'center', padding: '2rem' }}>
                 No students found. Add a student or upload a CSV file.
               </p>
+            ) : filteredStudents.length === 0 ? (
+              <p style={{ color: '#8b949e', textAlign: 'center', padding: '1rem' }}>
+                No students match your search.
+              </p>
             ) : (
               <div style={{ display: 'grid', gap: '0.5rem' }}>
-                {students.map((student) => (
+                {filteredStudents.map((student) => (
                   <div
                     key={student.id}
                     style={{
