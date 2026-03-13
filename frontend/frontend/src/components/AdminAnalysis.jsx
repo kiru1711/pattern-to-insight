@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import AnalysisCharts from "./AnalysisCharts";
 import AdminSummaryCard from "./AdminSummaryCard";
@@ -29,20 +29,26 @@ function AdminAnalysis({ result, csvData }) {
     }
   }, [navigate]);
 
-  // Fetch students from database
-  useEffect(() => {
-    fetchStudents();
-  }, []);
-
-  const fetchStudents = async () => {
+  const fetchStudents = useCallback(async () => {
     try {
       const response = await fetch("http://127.0.0.1:8000/students");
       const data = await response.json();
-      setStudents(data);
+      return data;
     } catch (error) {
       console.error("Error fetching students:", error);
+      return [];
     }
-  };
+  }, []);
+
+  // Fetch students from database
+  useEffect(() => {
+    const loadStudents = async () => {
+      const data = await fetchStudents();
+      setStudents(data);
+    };
+
+    loadStudents();
+  }, [fetchStudents]);
 
   const handleAddStudent = async (e) => {
     e.preventDefault();
@@ -80,7 +86,8 @@ function AdminAnalysis({ result, csvData }) {
         setNewStudentName("");
         setNewStudentScores({ Math: "", Biology: "", Physics: "", Chemistry: "" });
         setShowAddStudent(false);
-        fetchStudents();
+        const updatedStudents = await fetchStudents();
+        setStudents(updatedStudents);
       } else {
         setMessage({ text: data.message, type: "error" });
       }
@@ -103,7 +110,8 @@ function AdminAnalysis({ result, csvData }) {
 
       if (data.message) {
         setMessage({ text: data.message, type: "success" });
-        fetchStudents();
+        const updatedStudents = await fetchStudents();
+        setStudents(updatedStudents);
       } else if (data.error) {
         setMessage({ text: data.error, type: "error" });
       }
