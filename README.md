@@ -1,4 +1,5 @@
 **https://pattern-to-insight.vercel.app/**
+
 **Project Objective**
 
 The CSV Data Analyzer is a web-based application designed to help users upload CSV datasets and automatically generate visual insights such as comparisons, trends, distributions, anomalies, and threshold-based analysis.
